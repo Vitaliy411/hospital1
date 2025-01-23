@@ -62,6 +62,8 @@ path(
             'delete': 'destroy'
         })
     ),
+
+
 path(
         'visit/',
         VisitView.as_view({
