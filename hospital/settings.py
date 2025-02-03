@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'hospital.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'hospital1',
+        'NAME': 'hospital2',
         'USER': 'postgres',
         'PASSWORD': 'Qq123456',
         'HOST': '127.0.0.1',

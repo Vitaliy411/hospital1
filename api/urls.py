@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import DoctorView
+from .views import DoctorView, AnalyticsView
 from .views import ServiceView
 from .views import VisitView
 from .views import PatientViews
@@ -32,7 +32,7 @@ urlpatterns = [
             'get': 'list_patient',
         })
     ),
-path(
+    path(
         'patient/',
         PatientViews.as_view({
             'get': 'list',
@@ -62,21 +62,22 @@ path(
             'delete': 'destroy'
         })
     ),
-
-
-path(
+    path(
+        'analytics/',
+        AnalyticsView.as_view({
+            'get': 'get_analytics',
+        })
+    ),
+    path(
         'visit/',
         VisitView.as_view({
-            'get': 'list',
             'post': 'create'
         })
     ),
     path(
-        'visit/<int:id>/',
+        'visit/<int:id>/rating',
         VisitView.as_view({
-            'get': 'retrieve',
-            'put': 'update',
-            'delete': 'destroy'
+            'put': 'set_rating'
         })
     ),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
