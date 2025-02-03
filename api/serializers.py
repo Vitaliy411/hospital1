@@ -1,6 +1,7 @@
+from jsonschema.exceptions import ValidationError
 from rest_framework import serializers
 
-from .models import Doctor
+from .models import Doctor, Schedule
 from .models import Service
 from .models import Patient
 from .models import Visit
@@ -74,10 +75,10 @@ class VisitRetrieveSerializer(serializers.ModelSerializer):
         model = Visit
         fields = '__all__'
 
-class VisitCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Visit
-        fields = '__all__'
+# class VisitCreateSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Visit
+#         fields = '__all__'
 
 class VisitUpdateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -88,6 +89,45 @@ class VisitListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Visit
         fields = '__all__'
+
+
+
+
+
+class VisitCreateSerializer(serializers.ModelSerializer):
+    def validate_schedule(self, value):
+        visit_count = value.visits.count()
+        if 3 <= visit_count:
+            raise ValidationError('Превышено количество мест')
+        return value
+
+    class Meta:
+        model = Visit
+        fields = ['patient', 'service', 'schedule']
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        timestamp_start, timestamp_end = attrs['timestamp_start'], ['timestamp_end']
+
+        exists = Schedule.objects.filter(
+            timestamp_start__lte=timestamp_start,
+            timestamp_end__gte=timestamp_end
+        ).exists()
+
+        if exists:
+            raise ValidationError("Уже есть запись на это время, произошла накладка")
+
+class VisitRatingSerializer(serializers.ModelSerializer):
+    rating = serializers.IntegerField(min_value=0, max_value=10)
+
+    def validate_rating(self, value):
+        if self.instance.rating_set:
+            raise ValidationError("Вы уже ставили рейтинг")
+
+    class Meta:
+        model = Visit
+        fields = ['rating']
 
 
 
